@@ -1,0 +1,197 @@
+// This will create a down counter and send things out to the board
+
+/*-----------------------------------T Flip Flop------------------------------------*/
+
+module TFlipFlop (enable, clk, Q, reset);
+	input clk, enable, reset;
+	output reg Q;
+	always @(posedge clk)
+	if (enable & ~reset) // if reset isn't selected
+		Q <= !Q; // flips value to that of opposite
+	else // reset has been hit!
+		Q <= 0; // sets everything back to 0
+endmodule 
+
+/*----------------------------------Rate Divider------------------------------------*/
+
+module RateDivider (clk, pulse, gameOver, reset);
+	input clk, reset; // CLOCK_50, KEY
+	output reg pulse; // rate of reset 
+	input gameOver; // flag to signal game end
+	reg [25:0]counter; // for use in rate divider that counts 
+	
+	always@(posedge clk) begin
+		
+		if (reset) begin // if reset hasn't been hit (reset when low)
+			if (~gameOver) begin // if gameOver flag not yet received
+				if (pulse) // when pulse is received, counter will reset 
+					counter <= 26'b0; // counter resets to 0
+				else
+					counter <= counter + 1'b1; // counter will add one bit at every rising clock edge
+				pulse <= (counter == 26'd49999999); // 1Hz clock, resets after 50mil clock edges, i.e. 1 second
+			end // end gameOver
+		end // end reset 
+		else // if reset has been hit
+			pulse <= 1; // this will cause things to reset
+	end // end always block
+		
+endmodule
+
+/*---------------------------------Display Counter-----------------------------------*/
+
+module DisplayCounter(enable, clk, H, gameOver, reset);
+	input enable, clk, reset; // the pulse and clock_50
+	output [4:0]H; // five-bit binary to hex 
+	output reg gameOver;
+	wire [4:0]W; 
+	wire [3:0]A;
+	
+	TFlipFlop C0 (enable, clk, W[0], reset);
+	assign A[0] = W[0] & enable;
+	
+	TFlipFlop C1 (A[0], clk, W[1], reset);
+	assign A[1] = W[1] & A[0];
+	
+	TFlipFlop C2 (A[1], clk, W[2], reset);
+	assign A[2] = W[2] & A[1];
+	
+	TFlipFlop C3 (A[2], clk, W[3], reset);
+	assign A[3] = W[3] & A[2];
+	
+	TFlipFlop C4 (A[3], clk, W[4], reset);
+	
+	// massively assigns all my H outputs as the values for wires... 
+	assign H = W;
+	
+	always@(clk) begin
+		gameOver = (H == 5'b11110); // gameOver flag set to true
+	end 
+endmodule
+
+/*-----------------------------------Hex Display-------------------------------------*/
+
+module SSDecoder (Hin, H7, H6);
+	input [4:0]Hin;
+	output reg [6:0]H7, H6;
+	always@ (*)
+		case (Hin)
+			5'b00000 : begin 
+				H6 = 7'b1000000; //0
+				H7 = 7'b0110000; //3
+			end 5'b00001 : begin
+				H6 = 7'b0011000; //9
+				H7 = 7'b0100100; //2
+			end 5'b00010 : begin
+				H6 = 7'b0000000; //8
+				H7 = 7'b0100100; //2
+			end 5'b00011 : begin
+				H6 = 7'b1111000; //7
+				H7 = 7'b0100100; //2
+			end 5'b00100 : begin
+				H6 = 7'b0000011; //6
+				H7 = 7'b0100100; //2
+			end 5'b00101 : begin
+				H6 = 7'b0010010; //5
+				H7 = 7'b0100100; //2
+			end 5'b00110 : begin
+				H6 = 7'b0011001; //4
+				H7 = 7'b0100100; //2
+			end 5'b00111 : begin
+				H6 = 7'b0110000; //3
+				H7 = 7'b0100100; //2
+			end 5'b01000 : begin
+				H6 = 7'b0100100; //2
+				H7 = 7'b0100100; //2
+			end 5'b01001 : begin
+				H6 = 7'b1001111; //1
+				H7 = 7'b0100100; //2
+			end 5'b01010 : begin
+				H6 = 7'b1000000; //0
+				H7 = 7'b0100100; //2
+			end 5'b01011 : begin
+				H6 = 7'b0011000; //9
+				H7 = 7'b1001111; //1
+			end 5'b01100 : begin
+				H6 = 7'b0000000; //8
+				H7 = 7'b1001111; //1
+			end 5'b01101 : begin
+				H6 = 7'b1111000; //7
+				H7 = 7'b1001111; //1
+			end 5'b01110 : begin
+				H6 = 7'b0000011; //6
+				H7 = 7'b1001111; //1
+			end 5'b01111 : begin
+				H6 = 7'b0010010; //5
+				H7 = 7'b1001111; //1
+			end 5'b10000 : begin
+				H6 = 7'b0011001; //4
+				H7 = 7'b1001111; //1
+			end 5'b10001 : begin
+				H6 = 7'b0110000; //3
+				H7 = 7'b1001111; //1
+			end 5'b10010 : begin
+				H6 = 7'b0100100; //2
+				H7 = 7'b1001111; //1
+			end 5'b10011 : begin
+				H6 = 7'b1001111; //1
+				H7 = 7'b1001111; //1
+			end 5'b10100 : begin
+				H6 = 7'b1000000; //0
+				H7 = 7'b1001111; //1
+			end 5'b10101 : begin
+				H6 = 7'b0011000; //9
+				H7 = 7'b1000000; //0
+			end 5'b10110 : begin
+				H6 = 7'b0000000; //8
+				H7 = 7'b1000000; //0
+			end 5'b10111 : begin
+				H6 = 7'b1111000; //7
+				H7 = 7'b1000000; //0
+			end 5'b11000 : begin
+				H6 = 7'b0000011; //6
+				H7 = 7'b1000000; //0
+			end 5'b11001 : begin
+				H6 = 7'b0010010; //5
+				H7 = 7'b1000000; //0
+			end 5'b11010 : begin
+				H6 = 7'b0011001; //4
+				H7 = 7'b1000000; //0
+			end 5'b11011 : begin
+				H6 = 7'b0110000; //3
+				H7 = 7'b1000000; //0
+			end 5'b11100 : begin
+				H6 = 7'b0100100; //2
+				H7 = 7'b1000000; //0
+			end 5'b11101 : begin
+				H6 = 7'b1001111; //1
+				H7 = 7'b1000000; //0
+			end 5'b11110 : begin
+				H6 = 7'b1000000; //0
+				H7 = 7'b1000000; //0
+			end
+			default: begin
+				H6 = 7'b1111111; //0
+				H7 = 7'b1111111; //0
+			end
+		endcase
+endmodule 
+
+module Timer (HEX7, HEX6, HEX5, HEX4, HEX3, HEX2, HEX1, HEX0, CLOCK_50, LEDG, KEY);
+	input CLOCK_50; // given 50MHz clock signal
+	input [1:0]KEY;
+	output [6:0]HEX7, HEX6, HEX5, HEX4, HEX3, HEX2, HEX1, HEX0;
+	output [8:0]LEDG;
+	wire gameOver, pulse;
+	wire [4:0]Q;
+	
+	RateDivider R0 (CLOCK_50, pulse, gameOver, KEY[0]);
+	DisplayCounter D1(pulse, CLOCK_50, Q, gameOver, KEY[0]); // pulse is set as the "enable", same clock, output is for hex, gameOver is flag
+	SSDecoder S0(Q, HEX7, HEX6);
+	assign HEX5 = 7'b0010010; // S
+	assign HEX4 = 7'b1111111; // nothing
+	assign HEX3 = 7'b1000111; // L
+	assign HEX2 = 7'b0000110; // E
+	assign HEX1 = 7'b0001110; // F
+	assign HEX0 = 7'b0000111; // T
+	assign LEDG[8] = gameOver; // lights up when done
+endmodule

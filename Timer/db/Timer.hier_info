@@ -1,0 +1,134 @@
+|Timer
+CLOCK_50 => CLOCK_50.IN2
+KEY[0] => KEY[0].IN2
+KEY[1] => ~NO_FANOUT~
+
+
+|Timer|RateDivider:R0
+clk => pulse~reg0.CLK
+clk => counter[0].CLK
+clk => counter[1].CLK
+clk => counter[2].CLK
+clk => counter[3].CLK
+clk => counter[4].CLK
+clk => counter[5].CLK
+clk => counter[6].CLK
+clk => counter[7].CLK
+clk => counter[8].CLK
+clk => counter[9].CLK
+clk => counter[10].CLK
+clk => counter[11].CLK
+clk => counter[12].CLK
+clk => counter[13].CLK
+clk => counter[14].CLK
+clk => counter[15].CLK
+clk => counter[16].CLK
+clk => counter[17].CLK
+clk => counter[18].CLK
+clk => counter[19].CLK
+clk => counter[20].CLK
+clk => counter[21].CLK
+clk => counter[22].CLK
+clk => counter[23].CLK
+clk => counter[24].CLK
+clk => counter[25].CLK
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => counter.OUTPUTSELECT
+gameOver => pulse.OUTPUTSELECT
+reset => pulse.OUTPUTSELECT
+reset => counter[1].ENA
+reset => counter[0].ENA
+reset => counter[2].ENA
+reset => counter[3].ENA
+reset => counter[4].ENA
+reset => counter[5].ENA
+reset => counter[6].ENA
+reset => counter[7].ENA
+reset => counter[8].ENA
+reset => counter[9].ENA
+reset => counter[10].ENA
+reset => counter[11].ENA
+reset => counter[12].ENA
+reset => counter[13].ENA
+reset => counter[14].ENA
+reset => counter[15].ENA
+reset => counter[16].ENA
+reset => counter[17].ENA
+reset => counter[18].ENA
+reset => counter[19].ENA
+reset => counter[20].ENA
+reset => counter[21].ENA
+reset => counter[22].ENA
+reset => counter[23].ENA
+reset => counter[24].ENA
+reset => counter[25].ENA
+
+
+|Timer|DisplayCounter:D1
+enable => enable.IN1
+clk => clk.IN5
+reset => reset.IN5
+
+
+|Timer|DisplayCounter:D1|TFlipFlop:C0
+enable => Q.OUTPUTSELECT
+clk => Q~reg0.CLK
+reset => Q.OUTPUTSELECT
+
+
+|Timer|DisplayCounter:D1|TFlipFlop:C1
+enable => Q.OUTPUTSELECT
+clk => Q~reg0.CLK
+reset => Q.OUTPUTSELECT
+
+
+|Timer|DisplayCounter:D1|TFlipFlop:C2
+enable => Q.OUTPUTSELECT
+clk => Q~reg0.CLK
+reset => Q.OUTPUTSELECT
+
+
+|Timer|DisplayCounter:D1|TFlipFlop:C3
+enable => Q.OUTPUTSELECT
+clk => Q~reg0.CLK
+reset => Q.OUTPUTSELECT
+
+
+|Timer|DisplayCounter:D1|TFlipFlop:C4
+enable => Q.OUTPUTSELECT
+clk => Q~reg0.CLK
+reset => Q.OUTPUTSELECT
+
+
+|Timer|SSDecoder:S0
+Hin[0] => Decoder0.IN4
+Hin[1] => Decoder0.IN3
+Hin[2] => Decoder0.IN2
+Hin[3] => Decoder0.IN1
+Hin[4] => Decoder0.IN0
+
+
